@@ -26,12 +26,12 @@ import json
 import sys
 from pathlib import Path
 from types import ModuleType
-from concurrent.futures import Future  # ✅ use a real Future so as_completed() works
+from concurrent.futures import Future  # use a real Future so as_completed() works
 
 # Add the parent directory to sys.path so we can import data_grabber
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from typing import Any, Dict, List  # isort: skip
+from typing import Any, Dict, List, cast  # isort: skip
 from datetime import datetime  # isort: skip
 from decimal import Decimal  # isort: skip
 
@@ -102,7 +102,8 @@ def _install_fake_pcpartpicker(monkeypatch: pytest.MonkeyPatch) -> None:
     'from pcpartpicker import API' works inside data_grabber._worker_fetch.
     """
     fake_mod = ModuleType("pcpartpicker")
-    fake_mod.API = _FakeAPI
+    # Cast to Any so adding dynamic attributes doesn't upset Pylance
+    cast(Any, fake_mod).API = _FakeAPI
     monkeypatch.setitem(sys.modules, "pcpartpicker", fake_mod)
 
 
